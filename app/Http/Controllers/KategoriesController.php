@@ -18,7 +18,7 @@ class KategoriesController extends Controller
 
     public function FindKategori($kodeBarang, $namaBarang)
     {
-        $result = Kategori::where('kodeBarang',$kodeBarang)->orWhere('namaBarang', $namaBarang);
+        $result = Kategori::where('kodeBarang',$kodeBarang)->orWhere('namaBarang', $namaBarang)->first();
 
         if($result){
             return response()->json([

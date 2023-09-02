@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\KategoriesController;
 use App\Http\Controllers\PengadaanController;
+use App\Http\Controllers\RuangController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,3 +34,10 @@ Route::get('findKategori/{kodeBarang}/{namaBarang}',[KategoriesController::class
 Route::put('updateKategori/{kodeBarang}', [KategoriesController::class, 'UpdateKategori']);
 Route::post('tambahKategori',[KategoriesController::class, 'TambahKategori']);
 Route::delete('kategoriDelete/{kodeBarang}',[KategoriesController::class, 'DeleteKategori']);
+
+//Database Ruang
+Route::get('getRuang',[RuangController::class, 'index']);
+Route::get('findRuang/{kodeRuang}',[RuangController::class, 'FindRuang']);
+Route::put('updateRuang/{kodeRuang}',[RuangController::class], 'UpdateRuang');
+Route::post('tambahRuang',[RuangController::class, 'TambahRuang']);
+Route::delete('deleteRuang/{kodeRuang}',[RuangController::class, 'DeleteRuang']);

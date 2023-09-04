@@ -31,5 +31,5 @@ Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengada
 Route::get('getKategori',[KategoriesController::class, 'index']);
 Route::get('findKategori/{kodeBarang}/{namaBarang}',[KategoriesController::class, 'FindKategori']);
 Route::put('updateKategori/{kodeBarang}', [KategoriesController::class, 'UpdateKategori']);
-Route::post('tambahKategori',[KategoriesController::class, 'TambahKategori']);
+Route::post('tambahKategori/{kodeBarang}/{namaBarang}',[KategoriesController::class, 'TambahKategori']);
 Route::delete('kategoriDelete/{kodeBarang}',[KategoriesController::class, 'DeleteKategori']);

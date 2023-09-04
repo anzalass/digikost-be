@@ -18,7 +18,7 @@ class KategoriesController extends Controller
 
     public function FindKategori($kodeBarang, $namaBarang)
     {
-        $result = Kategori::where('kodeBarang',$kodeBarang)->orWhere('namaBarang', $namaBarang);
+        $result = Kategori::where('kodeBarang',$kodeBarang)->orWhere('namaBarang', $namaBarang)->first();
 
         if($result){
             return response()->json([
@@ -55,17 +55,25 @@ class KategoriesController extends Controller
         }
     }
 
-    public function TambahKategori(KategoriRequest $request)
+    public function TambahKategori(KategoriRequest $request, $kodeBarang, $namaBarang)
     {
+        $result = Kategori::where('kodeBarang',$kodeBarang)->orWhere('namaBarang', $namaBarang)->first();
         try{
-            Kategori::create([
-                'kodeBarang'=> $request->kodeBarang,
-                'namaBarang'=> $request->namaBarang
-            ]);
+            if ($result) {
+                return response()->json([
+                    'message'=> "Kategori Sudah ada"
+                ],404);
+            } else {
 
-            return response()->json([
-                'message'=> "Kategori Successfully Created"
-            ],200);
+                Kategori::create([
+                    'kodeBarang'=> $request->kodeBarang,
+                    'namaBarang'=> $request->namaBarang
+                ]);
+                return response()->json([
+                    'message'=> "Kategori Successfully Created"
+                ],200);
+            }
+
         }catch(\Exception $e){
                return response()->json([
                 'message'=> $e

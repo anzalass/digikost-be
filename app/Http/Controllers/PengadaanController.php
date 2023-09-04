@@ -44,6 +44,43 @@ class PengadaanController extends BaseController
         }
     }
 
+    public function FindByKategori($kodeBarang,$ruang){
+        try{
+            $pengadaan = Pengadaan::where('kodeBarang',$kodeBarang)->first();
+            if($pengadaan){
+                return response()->json([
+                    'results' => $pengadaan
+                ],200);
+            }
+            return response()->json([
+                'message' => "Barang tidak ditemukan"
+            ],404);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => $e
+            ],500);
+        }
+    }
+
+    public function getBarangRuangan($kodeRuang){
+        try{
+            $pengadaan = Pengadaan::where("ruang",$kodeRuang)->first();
+            if($pengadaan){
+                return response()->json([
+                    'results' => $pengadaan
+                ],200);
+            }
+
+            return response()->json([
+                'message' => 'Tidak Ada Barang'
+            ],404);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => $e
+            ],500);
+        }
+    }
+
     public function UpdatePengadaan(PengadaanRequest $request, $id){
         try{
             $pengadaan = Pengadaan::find($id);

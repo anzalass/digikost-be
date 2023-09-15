@@ -26,24 +26,28 @@ class PengadaanRequest extends FormRequest
         if(request()->isMethod('post')){
             return [
                 'namaBarang' => 'required|string|max:255',
+                'kodeBarang' => 'required|string|max:255',
+                'kodeRuang' => 'required|string|max:255',
                 'merek' => 'required|string|max:255',
                 'hargaBarang' => 'required|numeric', // Numeric validation
                 'quantity' => 'required|integer',   // Integer validation
                 'spesifikasi' => 'string|max:255',   // Optional validation
                 'ruang' => 'required|string|max:255',
                 'supplier' => 'required|string|max:255',
-                'buktiNota' => 'string|max:255',   // Optional validation
+                'buktiNota' => 'nullable|file|max:2048',   // Optional validation
             ];
         }else{
             return [
                 'namaBarang' => 'required|string|max:255',
+                'kodeBarang' => 'required|string|max:255',
+                'kodeRuang' => 'required|string|max:255',
                 'merek' => 'required|string|max:255',
                 'hargaBarang' => 'required|numeric', // Numeric validation
                 'quantity' => 'required|integer',   // Integer validation
                 'spesifikasi' => 'string|max:255',   // Optional validation
                 'ruang' => 'required|string|max:255',
                 'supplier' => 'required|string|max:255',
-                'buktiNota' => 'string|max:255',   // Optional validation
+                'buktiNota' => 'nullable|file|max:2048',   // Optional validation
             ];
         }
     }
@@ -53,24 +57,34 @@ class PengadaanRequest extends FormRequest
         if(request()->isMethod('post')){
             return [
                 'namaBarang.required' => 'Nama Barang required',
+                'kodeBarang.required' => 'Kode Barang required',
+                'kodeRuang.required' => 'Kode Ruang required',
                 'merek' => 'Merek required',
-                'hargaBarang' => 'Harga Barang required', // Numeric validation
-                'quantity' => 'Quantity required',   // Integer validation
+                'hargaBarang.required' => 'Harga Barang is required.',
+                'hargaBarang.numeric' => 'Harga Barang must be numeric.',
+                'quantity.required' => 'Quantity is required.',
+                'quantity.integer' => 'Quantity must be an integer.',
                 'spesifikasi' => 'Spesifikasi required',   // Optional validation
                 'ruang' => 'Ruang required',
                 'supplier' => 'Supplier required',
-                'buktiNota' => 'Bukti Nota required',   // Optional validation
+                'buktiNota.file' => 'Bukti Nota must be a file.',
+                'buktiNota.max' => 'Bukti Nota cannot be larger than 2MB.',   // Optional validation
             ];
         }else{
             return [
                 'namaBarang.required' => 'Nama Barang required',
+                'kodeBarang.required' => 'Kode Barang required',
+                'kodeRuang.required' => 'Kode Ruang required',
                 'merek' => 'Merek required',
-                'hargaBarang' => 'Harga Barang required', // Numeric validation
-                'quantity' => 'Quantity required',   // Integer validation
+                'hargaBarang.required' => 'Harga Barang is required.',
+                'hargaBarang.numeric' => 'Harga Barang must be numeric.',
+                'quantity.required' => 'Quantity is required.',
+                'quantity.integer' => 'Quantity must be an integer.',
                 'spesifikasi' => 'Spesifikasi required',   // Optional validation
                 'ruang' => 'Ruang required',
                 'supplier' => 'Supplier required',
-                'buktiNota' => 'Bukti Nota required',   // Optional validation
+                'buktiNota.file' => 'Bukti Nota must be a file.',
+                'buktiNota.max' => 'Bukti Nota cannot be larger than 2MB.',   // Optional validation
             ];
         }
     }

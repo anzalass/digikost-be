@@ -17,9 +17,12 @@ class Pemeliharaan extends Model
         'kodeBarang',
         'kodeRuang',
         'idUser',
+        'keterangan',
         'jumlah',
         'buktiPembayaran',
         'status',
         'harga',
+        'created_at',
+        'updated_at',
     ];
 }

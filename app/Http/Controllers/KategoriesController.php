@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\KategoriRequest;
 use App\Models\Kategori;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class KategoriesController extends Controller
@@ -57,18 +58,29 @@ class KategoriesController extends Controller
 
     public function TambahKategori(KategoriRequest $request)
     {
+        $validator = Validator::make($request->all(), [
+            'kodeBarang' => 'required|string|max:20',
+            'namaBarang' => 'required|string|max:255',
+        ]);
         try{
-            Kategori::create([
-                'kodeBarang'=> $request->kodeBarang,
-                'namaBarang'=> $request->namaBarang
-            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ],422);
+                // return response()->json(['errors' => $validator->errors()], 422);
+            }else{
+                Kategori::create([
+                    'kodeBarang'=> $request->kodeBarang,
+                    'namaBarang'=> $request->namaBarang
+                ]);
 
-            return response()->json([
-                'message'=> "Kategori Successfully Created"
-            ],200);
+                return response()->json([
+                    'message'=> "Kategori Successfully Created"
+                ],200);
+            }    
         }catch(\Exception $e){
-               return response()->json([
-                'message'=> $e
+            return response()->json([
+                'message'=> "gg"
             ],500);
         }
     }

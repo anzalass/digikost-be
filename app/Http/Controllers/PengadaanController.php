@@ -30,6 +30,7 @@ class PengadaanController extends BaseController
                 'hargaBarang'=> $request->hargaBarang,
                 'quantity' => $request->quantity,
                 'spesifikasi' => $request->spesifikasi,
+                'keterangan' => $request->keterangan,
                 'ruang' => $request->ruang,
                 'supplier' => $request->supplier,
                 'buktiNota' => $request->buktiNota
@@ -96,6 +97,7 @@ class PengadaanController extends BaseController
             $pengadaan->hargaBarang = $request->hargaBarang;
             $pengadaan->spesifikasi = $request->spesifikasi;
             $pengadaan->ruang = $request->ruang;
+            $pengadaan->keterangan = $request->keterangan;
             $pengadaan->supplier = $request->supplier;
             $pengadaan->buktiNota = $request->buktiNota;
 

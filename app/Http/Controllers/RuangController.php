@@ -6,6 +6,7 @@ use App\Http\Requests\RuangRequest;
 use App\Models\Pengadaan;
 use App\Models\Ruang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RuangController extends Controller
 {
@@ -25,17 +26,28 @@ class RuangController extends Controller
 
     public function TambahRuang(RuangRequest $request){
         try{
-            Ruang::create([
-                'kodeRuang' => $request->kodeRuang,
-                'namaRuang' => $request->namaRuang
+            $validator = Validator::make($request->all(),[
+                'kodeRuang' => 'required|string|max:255',
+                'ruang' => 'required|string|max:255',
             ]);
-            return response()->json([
-                'message' => 'Ruang Successfully created'
-            ],200);
+
+            if($validator->fails()){
+                return response()->json([
+                    'error'=>$validator->errors()
+                ],422);
+            }else{
+                Ruang::create([
+                    'kodeRuang' => $request->kodeRuang,
+                    'ruang' => $request->ruang
+                ]);
+                return response()->json([
+                    'message' => $request->ruang
+                ],200);
+            }
         }catch(\Exception $e){
             return response()->json([
                 'message' => $e
-            ],404);
+            ],500);
         }
     }
 
@@ -63,7 +75,6 @@ class RuangController extends Controller
                 ],404);
             }
 
-            $findRuang->kodeRuang = $request->kodeRuang;
             $findRuang->namaRuang = $request->namaRuang;
 
             $findRuang->save();

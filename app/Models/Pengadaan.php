@@ -20,6 +20,8 @@ class Pengadaan extends Model
      */
     protected $fillable = [
         'id',
+        'kodeBarang',
+        'kodeRuang',
         'namaBarang',
         'merek',
         'hargaBarang',

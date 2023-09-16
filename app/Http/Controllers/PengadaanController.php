@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller as BaseController;
 
 use App\Models\Pengadaan;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class PengadaanController extends BaseController
 {
@@ -23,25 +24,47 @@ class PengadaanController extends BaseController
     }
 
     public function TambahPengadaan(PengadaanRequest $request){
-        try{
-            Pengadaan::create([
-                'namaBarang' => $request->namaBarang,
-                'merek' => $request->merek,
-                'hargaBarang'=> $request->hargaBarang,
-                'quantity' => $request->quantity,
-                'spesifikasi' => $request->spesifikasi,
-                'keterangan' => $request->keterangan,
-                'ruang' => $request->ruang,
-                'supplier' => $request->supplier,
-                'buktiNota' => $request->buktiNota
-            ]);
+        $validator = Validator::make($request->all(),[
+            'namaBarang' => 'required|string|max:255',
+            'kodeBarang' => 'required|string|max:255',
+            'kodeRuang' => 'required|string|max:255',
+            'merek' => 'required|string|max:255',
+            'hargaBarang' => 'required|numeric',
+            'quantity' => 'required|integer',
+            'spesifikasi' => 'string|max:255',
+            'ruang' => 'required|string|max:255',
+            'supplier' => 'required|string|max:255',
+            'buktiNota' => 'nullable|file|max:2048', 
+        ]);
+
+        if($validator->fails()){
+
             return response()->json([
-                'message' => "Pengadaan Successfully Created"
-            ],200);
-        }catch(\Exception $e){
-            return response()->json([
-                'message' => $e
-            ],500);
+                'error' => $validator->errors()
+            ],422);
+        }else{
+            try{
+                Pengadaan::create([
+                    'namaBarang' => $request->namaBarang,
+                    'kodeBarang' => $request->kodeBarang,
+                    'kodeRuang' => $request->kodeRuang,
+                    'merek' => $request->merek,
+                    'hargaBarang'=> $request->hargaBarang,
+                    'quantity' => $request->quantity,
+                    'spesifikasi' => $request->spesifikasi,
+                    'keterangan' => $request->keterangan,
+                    'ruang' => $request->ruang,
+                    'supplier' => $request->supplier,
+                    'buktiNota' => $request->buktiNota
+                ]);
+                return response()->json([
+                    'message' => "Pengadaan Successfully Created"
+                ],200);
+            }catch(\Exception $e){
+                return response()->json([
+                    'message' => $e
+                ],500);
+            }
         }
     }
 

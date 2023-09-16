@@ -4,6 +4,7 @@ use App\Http\Controllers\KategoriesController;
 use App\Http\Controllers\PengadaanController;
 use App\Http\Controllers\PemeliharaanController;
 use App\Http\Controllers\RuangController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +19,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::middleware('auth:sanctum')->group(function(){
+    Route::get('user',[UserController::class, 'user']);
+    Route::post('logout',[UserController::class,'logout']);
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('GetUser',[UserController::class,'getUser']);
+// Route::get('User',[UserController::class,'user']);
+});
+
+Route::prefix('api')->middleware('api')->group(function () {
+    Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'tambahPemeliharaan']);
+});
+
 
 //Database Pengadaan
 Route::get('pengadaan',[PengadaanController::class, 'index']);
@@ -30,6 +46,11 @@ Route::get('findByKategori/{kodeBarang}',[PengadaanController::class, 'FindByKat
 Route::post('tambahPengadaan',[PengadaanController::class, 'TambahPengadaan']);
 Route::put('updatePengadaan/{id}', [PengadaanController::class, 'UpdatePengadaan']);
 Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengadaan']);
+
+//Database User
+Route::post('Register',[UserController::class,'register']);
+Route::post('login',[UserController::class, 'login']);
+Route::post('forgotPassword',[UserController::class, 'register']);
 
 //Database Kategori
 Route::get('getKategori',[KategoriesController::class, 'index']);
@@ -42,11 +63,15 @@ Route::delete('kategoriDelete/{kodeBarang}',[KategoriesController::class, 'Delet
 //Database Ruang
 Route::get('getRuang',[RuangController::class, 'index']);
 Route::get('findRuang/{kodeRuang}',[RuangController::class, 'FindRuang']);
-Route::put('updateRuang/{kodeRuang}',[RuangController::class], 'UpdateRuang');
+Route::put('updateRuang/{kodeRuang}',[RuangController::class,'UpdateRuang']);
 Route::post('tambahRuang',[RuangController::class, 'TambahRuang']);
 Route::delete('deleteRuang/{kodeRuang}',[RuangController::class, 'DeleteRuang']);
 
 //Database Pemeliharaan
 Route::get('getPemeliharaan',[PemeliharaanController::class, 'getPemeliharaan']);
-Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'tambahPemeliharaan']);
+
+Route::put('updatePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'UpdatePemeliharaan']);
 Route::delete('deletePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'hapusPemeliharaan']);
+
+//Database User
+

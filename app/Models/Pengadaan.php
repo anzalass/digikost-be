@@ -31,6 +31,7 @@ class Pengadaan extends Model
         'ruang',
         'supplier',
         'buktiNota',
+        'linkBarcode'
     ];
 
     /**

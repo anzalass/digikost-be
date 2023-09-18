@@ -29,12 +29,12 @@ class PengadaanRequest extends FormRequest
                 'kodeBarang' => 'required|string|max:255',
                 'kodeRuang' => 'required|string|max:255',
                 'merek' => 'required|string|max:255',
-                'hargaBarang' => 'required|numeric', // Numeric validation
-                'quantity' => 'required|integer',   // Integer validation
+                'hargaBarang' => 'required|number', // Numeric validation
+                'quantity' => 'required|number',   // Integer validation
                 'spesifikasi' => 'string|max:255',   // Optional validation
                 'ruang' => 'required|string|max:255',
                 'supplier' => 'required|string|max:255',
-                'buktiNota' => 'nullable|file|max:2048',   // Optional validation
+                'buktiNota' => 'nullable|file|max:10048',   // Optional validation
             ];
         }else{
             return [
@@ -42,12 +42,12 @@ class PengadaanRequest extends FormRequest
                 'kodeBarang' => 'required|string|max:255',
                 'kodeRuang' => 'required|string|max:255',
                 'merek' => 'required|string|max:255',
-                'hargaBarang' => 'required|numeric', // Numeric validation
-                'quantity' => 'required|integer',   // Integer validation
+                'hargaBarang' => 'required|number', // Numeric validation
+                'quantity' => 'required|number',   // Integer validation
                 'spesifikasi' => 'string|max:255',   // Optional validation
                 'ruang' => 'required|string|max:255',
                 'supplier' => 'required|string|max:255',
-                'buktiNota' => 'nullable|file|max:2048',   // Optional validation
+                'buktiNota' => 'required|max:10048',   // Optional validation
             ];
         }
     }
@@ -67,8 +67,8 @@ class PengadaanRequest extends FormRequest
                 'spesifikasi' => 'Spesifikasi required',   // Optional validation
                 'ruang' => 'Ruang required',
                 'supplier' => 'Supplier required',
-                'buktiNota.file' => 'Bukti Nota must be a file.',
-                'buktiNota.max' => 'Bukti Nota cannot be larger than 2MB.',   // Optional validation
+                'buktiNota.required' => 'Bukti Nota is required.',
+                'buktiNota.max' => 'Bukti Nota cannot be larger than 10MB.',   // Optional validation
             ];
         }else{
             return [
@@ -83,8 +83,8 @@ class PengadaanRequest extends FormRequest
                 'spesifikasi' => 'Spesifikasi required',   // Optional validation
                 'ruang' => 'Ruang required',
                 'supplier' => 'Supplier required',
-                'buktiNota.file' => 'Bukti Nota must be a file.',
-                'buktiNota.max' => 'Bukti Nota cannot be larger than 2MB.',   // Optional validation
+                'buktiNota.required' => 'Bukti Nota is required.',
+                'buktiNota.max' => 'Bukti Nota cannot be larger than 10MB.',   // Optional validation
             ];
         }
     }

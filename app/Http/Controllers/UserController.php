@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
+
 
 // use \Illuminate\Http\Response::HTTP_UNAUTHORIZED
 
@@ -28,19 +30,33 @@ class UserController extends BaseController
             'results' => $pengadaan
         ],200);
     }
-    public function register(UserRequest $request){
-        try{
-           $user = User::create([
-                'email'=>$request->email,
-                'name'=>$request->name,
-                'password' => Hash::make($request->password ),
-                'role' => $request->role
+    public function regis(UserRequest $request){
+          $validator = Validator::make($request->all(),[
+                'email' => 'required|email',
+                'password' => 'required|string|max:50',
+                'name' => 'required|string|max:255',
+                'role' => 'required|string|max:1',
+                "noHP" => 'required|string|max:13'
+          
             ]);
+             if($validator->fails()){
+                return response()->json([
+                    'error' => $validator->errors()
+                ],422);
+            }
+        try{
+            $user = User::create([
+                        'email'=>$request->email,
+                        'name'=>$request->name,
+                        'password' => Hash::make($request->password ),
+                        'role' => $request->role,
+                        'noHP' => $request->noHP
+                    ]);
 
             if($user){
                 try{
                     Mail::mailer('smtp')->to($user->email)->send(new UserVerification($user));
-                    
+
                     return response()->json([
                         'status'=>200,
                         'message' => "Registered, verify your email address to login"
@@ -54,18 +70,25 @@ class UserController extends BaseController
                     ],500);
                 }
             }
+                return response()->json([
+                    'status'=>201,
+                    'message' => "Registered, verify your email address to login"
+                ],200);
+        
         }catch(\Exception $e){
             return response()->json([
                 'message'=>$e
             ],500);
         }
+    
+
     }
 
     public function getUser(){
-        $pengadaan = User::all();
+        $user = User::all();
 
         return response()->json([
-            'results' => $pengadaan
+            'results' => $user
         ],200);
     }
 
@@ -125,5 +148,16 @@ class UserController extends BaseController
         return Response()->json([
             'message' => 'Success'
         ])->withCookie($cookie);
+    }
+
+    public function deleteUser($id){
+        $findUser = User::find($id);
+
+        if($findUser){
+            $findUser->delete();
+            return response()->json([
+                'message' =>"User berhasil dihapus."
+            ],200);
+        }
     }
 }

@@ -48,9 +48,11 @@ Route::put('updatePengadaan/{id}', [PengadaanController::class, 'UpdatePengadaan
 Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengadaan']);
 
 //Database User
-Route::post('Register',[UserController::class,'register']);
+Route::get('getUser',[UserController::class, 'getUser']);
+Route::post('Register',[UserController::class,'regis']);
 Route::post('login',[UserController::class, 'login']);
 Route::post('forgotPassword',[UserController::class, 'register']);
+Route::delete('deleteUser/{id}', [UserController::class, 'deleteUser']);
 
 //Database Kategori
 Route::get('getKategori',[KategoriesController::class, 'index']);
@@ -62,7 +64,7 @@ Route::delete('kategoriDelete/{kodeBarang}',[KategoriesController::class, 'Delet
 //Database Ruang
 Route::get('getRuang',[RuangController::class, 'index']);
 Route::get('findRuang/{kodeRuang}',[RuangController::class, 'FindRuang']);
-Route::put('updateRuang/{kodeRuang}',[RuangController::class,'UpdateRuang']);
+Route::put('updateRuang',[RuangController::class,'UpdateRuang']);
 Route::post('tambahRuang',[RuangController::class, 'TambahRuang']);
 Route::delete('deleteRuang/{kodeRuang}',[RuangController::class, 'DeleteRuang']);
 

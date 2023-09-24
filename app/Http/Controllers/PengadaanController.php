@@ -34,7 +34,7 @@ class PengadaanController extends BaseController
             'spesifikasi' => 'string|max:255',
             'ruang' => 'required|string|max:255',
             'supplier' => 'required|string|max:255',
-            'buktiNota' => 'nullable|file|max:2048', 
+            'buktiNota' => 'nullable|max:10048', 
         ]);
 
         if($validator->fails()){
@@ -55,7 +55,8 @@ class PengadaanController extends BaseController
                     'keterangan' => $request->keterangan,
                     'ruang' => $request->ruang,
                     'supplier' => $request->supplier,
-                    'buktiNota' => $request->buktiNota
+                    'buktiNota' => $request->buktiNota,
+                    'linkBarcode' => env('FRONTEND_URL')+'/api/'+$request->ruang,
                 ]);
                 return response()->json([
                     'message' => "Pengadaan Successfully Created"

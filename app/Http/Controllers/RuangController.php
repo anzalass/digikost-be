@@ -65,26 +65,37 @@ class RuangController extends Controller
         }
     }
 
-    public function UpdateRuang(RuangRequest $request, $kodeRuang, $namaRuang){
+    public function UpdateRuang(RuangRequest $request){
         try{
-            $findRuang = Ruang::where("kodeRuang", $kodeRuang)->orWhere("namaRuang", $namaRuang)->first();
+            $validator = Validator::make($request->all(),[
+                'kodeRuang' => 'required|string|max:255',
+                'ruang' => 'required|string|max:255',
+            ]);
 
-            if(!$findRuang){
+            if($validator->fails()){
                 return response()->json([
-                    'message' => 'Data Ruangan tidak ditemukan'
-                ],404);
+                    'error'=>$validator->errors()
+                ],422);
+            }else{
+                $findRuang = Ruang::where("kodeRuang", $request->kodeRuang)->first();
+
+                if(!$findRuang){
+                    return response()->json([
+                        'message' => 'Data Ruangan tidak ditemukan'
+                    ],404);
+                }
+
+                $findRuang->ruang = $request->ruang;
+
+                $findRuang->save();
+
+                return response()->json([
+                    'message' => 'Data Ruangan Berhasil Di Update'
+                ],200);
             }
-
-            $findRuang->namaRuang = $request->namaRuang;
-
-            $findRuang->save();
-
-            return response()->json([
-                'message' => 'Data Ruangan Berhasil Di Update'
-            ],200);
         }catch(\Exception $e){
             return response()->json([
-                'message' => $e
+                'message' => 'test'
             ],404);
         }
     }

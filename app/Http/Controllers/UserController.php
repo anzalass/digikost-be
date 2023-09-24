@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Mail\UserVerification;
 use App\Models\Pengadaan;
@@ -53,36 +54,29 @@ class UserController extends BaseController
                         'noHP' => $request->noHP
                     ]);
 
+            if($user){
+                try{
+                    Mail::mailer('smtp')->to($user->email)->send(new UserVerification($user));
 
-            // if($user){
-            //     try{
-            //         Mail::mailer('smtp')->to($user->email)->send(new UserVerification($user));
-
-            //         return response()->json([
-            //             'status'=>200,
-            //             'message' => "Registered, verify your email address to login"
-            //         ],200);
-            //     }catch(\Exception $e){
-            //         $user->delete();
+                    return response()->json([
+                        'status'=>200,
+                        'message' => "Registered, verify your email address to login"
+                    ],200);
+                }catch(\Exception $e){
+                    $user->delete();
                     
-            //         return response()->json([
-            //             'status'=>500,
-            //             'message' => "could not send email verification, please try again"
-            //         ],500);
-            //     }
-            // }
-                return response()->json([
-                    'status'=>201,
-                    'message' => "Registered, verify your email address to login"
-                ],200);
-
+                    return response()->json([
+                        'status'=>500,
+                        'message' => "could not send email verification, please try again"
+                    ],500);
+                }
+            }
+        
         }catch(\Exception $e){
             return response()->json([
                 'message'=>$e
             ],500);
         }
-    
-
     }
 
     public function getUser(){
@@ -97,26 +91,34 @@ class UserController extends BaseController
         return Auth::user();
     }
 
-    public function login(UserRequest $request){
-        // return response()->json([
-        //     'results' => $request->password
-        // ],200);
-        if(!$token = Auth::attempt($request->only('email','password'))){
-            return response([
-                'message'=> "Invalid Credentials"
-            ], Response::HTTP_UNAUTHORIZED);
+    public function login(LoginRequest $request){
+        $validator = Validator::make($request->only(['email', 'password']),[
+            'email' => 'required|email',
+            'password' => 'required|string|max:50',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'error' => $validator->errors()
+            ],422);
+        }else{
+            if(!$token = Auth::attempt($request->only('email','password'))){
+                return response([
+                    'message'=> "Invalid Credentials"
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // return $this->respondWithToken($token);
+
+            $user = Auth::user();
+            $token = $user->createToken('token')->plainTextToken;
+
+            $cookie = cookie('jwt',$token, 60*24,);
+
+            return response()->json([
+                'message' => $token
+            ])->withCookie($cookie);
         }
-
-        // return $this->respondWithToken($token);
-
-        $user = Auth::user();
-        $token = $user->createToken('token')->plainTextToken;
-
-        $cookie = cookie('jwt',$token, 60*24,);
-
-        return response()->json([
-            'message' => $token
-        ])->withCookie($cookie);
     }
 
     // public function sendResetLinkEmail(UserRequest $request)

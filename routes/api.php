@@ -33,9 +33,9 @@ Route::middleware('auth')->group(function () {
 // Route::get('User',[UserController::class,'user']);
 });
 
-Route::prefix('api')->middleware('api')->group(function () {
-    Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'tambahPemeliharaan']);
-});
+// Route::prefix('api')->middleware('api')->group(function () {
+//     Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'tambahPemeliharaan']);
+// });
 
 
 //Database Pengadaan
@@ -72,8 +72,6 @@ Route::delete('deleteRuang/{kodeRuang}',[RuangController::class, 'DeleteRuang'])
 //Database Pemeliharaan
 Route::get('getPemeliharaan',[PemeliharaanController::class, 'getPemeliharaan']);
 
+Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'TambahPemeliharaan']);
 Route::put('updatePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'UpdatePemeliharaan']);
 Route::delete('deletePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'hapusPemeliharaan']);
-
-//Database User
-

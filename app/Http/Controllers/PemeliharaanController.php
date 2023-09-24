@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Pemeliharaan;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class PemeliharaanController extends Controller
 {
@@ -18,21 +19,44 @@ class PemeliharaanController extends Controller
         ],200);
     }
 
-    public function tambahPemeliharaan(PemeliharaanRequest $request){
+    public function TambahPemeliharaan(PemeliharaanRequest $request){
         try{
-            Pemeliharaan::create([
-                'kodeBarang'=> $request->kodeBarang,
-                'kodeRuang'=> $request->kodeRuang,
-                'idUser' => $request->idUser,
-                'jumlah'=> $request->jumlah,
-                'keterangan'=>$request->keterangan,
-                'buktiPembayaran'=> $request->buktiPembayaran,
-                'status'=> $request->status,
-                'harga'=> $request->harga
+            $validator = Validator::make($request->all(),[
+                'kodeBarang'=> 'required',
+                'kodeRuang'=> 'required',
+                'idUser' => 'required',
+                'jumlah'=> 'required',
+                'keterangan'=> 'required',
+                'buktiPembayaran'=> 'required',
+                'status'=> 'required',
+                'harga'=> 'required',
             ]);
-            return response()->json([
-                'message' => 'Pemeliharaan Berhasil Ditambahkan'
-            ],200);
+            if($validator->fails()){
+                return response()->json([
+                    'error' => $validator->errors()
+                ],422);
+            }else{
+                $pemeliharaan = Pemeliharaan::create([
+                    'kodeBarang'=> $request->kodeBarang,
+                    'kodeRuang'=> $request->kodeRuang,
+                    'idUser' => $request->idUser,
+                    'jumlah'=> $request->jumlah,
+                    'keterangan'=>$request->keterangan,
+                    'buktiPembayaran'=> $request->buktiPembayaran,
+                    'status'=> $request->status,
+                    'harga'=> $request->harga
+                ]);
+                
+                if($pemeliharaan){
+                    return response()->json([
+                        'message' => 'Pemeliharaan Berhasil Ditambahkan'
+                    ],200);
+                }else{
+                    return response()->json([
+                        'message' => 'Pemeliharaan Tidak Berhasil Ditambahkan'
+                    ],500); 
+                }
+            }
         }catch(\Exception $e){
             return response()->json([
                 'message' => $e
@@ -49,27 +73,39 @@ class PemeliharaanController extends Controller
                 ],404);
             }
             
-            if($request->jumlah !== null){
-                $findPemeliharaan->jumlah = $request->jumlah;
-            } 
-            if($request->keterangan !== null){
-                $findPemeliharaan->keterangan = $request->keterangan;
-            }
-            if($request->status !== null){
-                $findPemeliharaan->status = $request->status;
-            }
-            if($request->harga !== null){
-                $findPemeliharaan->harga = $request->harga;
-            }
-            if($request->buktiPembayaran !== null){
-                $findPemeliharaan->buktiPembayaran = $request->buktiPembayaran;
-            }
-            $findPemeliharaan->save();
+            // if($request->jumlah !== null){
+            //     $findPemeliharaan->jumlah = $request->jumlah;
+            // } 
+            // if($request->keterangan !== null){
+            //     $findPemeliharaan->keterangan = $request->keterangan;
+            // }
+            // if($request->status !== null){
+            //     $findPemeliharaan->status = $request->status;
+            // }
+            // if($request->harga !== null){
+            //     $findPemeliharaan->harga = $request->harga;
+            // }
+            // if($request->buktiPembayaran !== null){
+            //     $findPemeliharaan->buktiPembayaran = $request->buktiPembayaran;
+            // }
 
-            return response()->json([
-                'message' => 'Data Pemeliharaan Berhasil Di Update'
-            ],200);
-            
+            $validator = Validator::make($request->only(['status']),[
+                'status' => 'required',
+            ]);
+           
+            if($validator->fails()){
+                  return response()->json([
+                    'message'=>$request->status,
+                    'error' => $validator->errors()
+                ],422);
+            }else{
+                $findPemeliharaan->status = $request->status;
+                $findPemeliharaan->save();
+
+                return response()->json([
+                    'message' => 'Data Pemeliharaan Berhasil Di Update'
+                ],200);
+            }
        }catch(Exception $e){
             return response()->json([
                 'message' => $e

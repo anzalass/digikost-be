@@ -29,17 +29,18 @@ class PengadaanController extends BaseController
             'kodeBarang' => 'required|string|max:255',
             'kodeRuang' => 'required|string|max:255',
             'merek' => 'required|string|max:255',
-            'hargaBarang' => 'required|numeric',
-            'quantity' => 'required|integer',
+            'hargaBarang' => 'required',
+            'quantity' => 'required',
             'spesifikasi' => 'string|max:255',
             'ruang' => 'required|string|max:255',
             'supplier' => 'required|string|max:255',
-            'buktiNota' => 'nullable|max:10048', 
+            'buktiNota' => 'required', 
         ]);
 
         if($validator->fails()){
             return response()->json([
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
+                'message' => $validator
             ],422);
         }else{
             try{
@@ -55,7 +56,7 @@ class PengadaanController extends BaseController
                     'ruang' => $request->ruang,
                     'supplier' => $request->supplier,
                     'buktiNota' => $request->buktiNota,
-                    'linkBarcode' => env('FRONTEND_URL')+'/api/'+$request->ruang,
+                    'linkBarcode' => env('FRONTEND_URL') . '/api/' . $request->ruang,
                 ]);
                 return response()->json([
                     'message' => "Pengadaan Successfully Created"

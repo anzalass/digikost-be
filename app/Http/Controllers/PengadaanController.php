@@ -116,6 +116,8 @@ class PengadaanController extends BaseController
             }
 
             $pengadaan->namaBarang = $request->namaBarang;
+            $pengadaan->kodeBarang = $request->kodeBarang;
+            $pengadaan->kodeRuang = $request->kodeRuang;
             $pengadaan->merek = $request->merek;
             $pengadaan->quantity = $request->quantity;
             $pengadaan->hargaBarang = $request->hargaBarang;

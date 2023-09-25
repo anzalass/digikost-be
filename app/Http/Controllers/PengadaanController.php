@@ -19,7 +19,8 @@ class PengadaanController extends BaseController
         $pengadaan = Pengadaan::all();
 
         return response()->json([
-            'results' => $pengadaan
+            'result' => $pengadaan,
+            'total' => count($pengadaan)
         ],200);
     }
 
@@ -93,7 +94,9 @@ class PengadaanController extends BaseController
             $pengadaan = Pengadaan::where("ruang",$kodeRuang)->first();
             if($pengadaan){
                 return response()->json([
-                    'results' => $pengadaan
+              
+                    'results' => $pengadaan,
+
                 ],200);
             }
 

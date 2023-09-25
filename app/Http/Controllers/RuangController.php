@@ -15,7 +15,8 @@ class RuangController extends Controller
 
         if($ruang){
             return response()->json([
-                'results' => $ruang
+                'results' => $ruang,
+                'total' => count($ruang)
             ],200);
         }
 

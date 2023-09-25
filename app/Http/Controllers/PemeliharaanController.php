@@ -15,7 +15,8 @@ class PemeliharaanController extends Controller
         $Pemeliharaan = Pemeliharaan::all();
 
         return response()->json([
-            'results' => $Pemeliharaan
+            'results' => $Pemeliharaan,
+            'total' => count($Pemeliharaan)
         ],200);
     }
 

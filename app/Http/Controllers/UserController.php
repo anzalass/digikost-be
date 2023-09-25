@@ -153,6 +153,35 @@ class UserController extends BaseController
         ])->withCookie($cookie);
     }
 
+    public function updateDataUser(UserRequest $request, $id){
+        try{
+            $findUser = User::find($id);
+            if($findUser){
+                $validator = Validator::make($request->only(['name', 'noHP']),[
+                    'name' => 'required',
+                    'noHP' => 'required|max:13'
+                ]);
+
+                if($validator->fails()){
+                    return response()->json([
+                        'error' => $validator->errors()
+                    ],422);
+                }else{
+                    $findUser->name = $request->name;
+                    $findUser->noHP = $request->noHP;
+                    $findUser->save();
+                    return response()->json([
+                        'message' => "Data User Berhasil Di Update"
+                    ],200);
+                }
+            }
+        }catch(\Exception $e){
+            return response()->json([
+                'message'=> $e
+            ],500);
+        }
+    }
+
     public function deleteUser($id){
         $findUser = User::find($id);
 

@@ -20,7 +20,8 @@ class PengadaanController extends BaseController
         $pengadaan = Pengadaan::all();
 
         return response()->json([
-            'results' => $pengadaan
+            'results' => $pengadaan,
+            'total' => count($pengadaan)
         ],200);
     }
 

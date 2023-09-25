@@ -13,7 +13,8 @@ class KategoriesController extends Controller
     {
         $result = Kategori::all();
         return response()->json([
-            'results' => $result
+            'results' => $result,
+            'total'=> count($result)
         ],200);
     }
 

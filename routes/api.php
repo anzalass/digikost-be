@@ -49,6 +49,8 @@ Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengada
 
 //Database User
 Route::get('getUser',[UserController::class, 'getUser']);
+Route::get('getUserById/{id}',[UserController::class,'getUserById']);
+Route::put('updateDataUser/{id}',[UserController::class, 'updateDataUser']);
 Route::post('Register',[UserController::class,'regis']);
 Route::post('login',[UserController::class, 'login']);
 Route::post('forgotPassword',[UserController::class, 'register']);
@@ -74,4 +76,7 @@ Route::get('getPemeliharaan',[PemeliharaanController::class, 'getPemeliharaan'])
 
 Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'TambahPemeliharaan']);
 Route::put('updatePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'UpdatePemeliharaan']);
+
+Route::put('editPemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'EditPemeliharaan']);
 Route::delete('deletePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'hapusPemeliharaan']);
+

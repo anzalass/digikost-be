@@ -24,13 +24,6 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends BaseController
 {
-    public function index(){
-        $pengadaan = Pengadaan::all();
-
-        return response()->json([
-            'results' => $pengadaan
-        ],200);
-    }
     public function regis(UserRequest $request){
           $validator = Validator::make($request->all(),[
                 'email' => 'required|email',
@@ -83,9 +76,25 @@ class UserController extends BaseController
         $user = User::all();
 
         return response()->json([
-            'results' => $user
+            'results' => $user,
+            'total' =>count($user)
         ],200);
     }
+
+    public function getUserById($id){
+        try{   
+            $userFind = User::find($id);
+            if($userFind){
+                return response()->json([
+                    'results'=> $userFind
+                ],200);
+            }
+        }catch(\Exception $e){
+            return response()->json([
+                'message'=> $e
+            ],500);
+        }
+    }   
 
     public function user(){
         return Auth::user();
@@ -151,6 +160,35 @@ class UserController extends BaseController
         return Response()->json([
             'message' => 'Success'
         ])->withCookie($cookie);
+    }
+
+    public function updateDataUser(UserRequest $request, $id){
+        try{
+            $findUser = User::find($id);
+            if($findUser){
+                $validator = Validator::make($request->only(['name', 'noHP']),[
+                    'name' => 'required',
+                    'noHP' => 'required|max:13'
+                ]);
+
+                if($validator->fails()){
+                    return response()->json([
+                        'error' => $validator->errors()
+                    ],422);
+                }else{
+                    $findUser->name = $request->name;
+                    $findUser->noHP = $request->noHP;
+                    $findUser->save();
+                    return response()->json([
+                        'message' => "Data User Berhasil Di Update"
+                    ],200);
+                }
+            }
+        }catch(\Exception $e){
+            return response()->json([
+                'message'=> $e
+            ],500);
+        }
     }
 
     public function deleteUser($id){

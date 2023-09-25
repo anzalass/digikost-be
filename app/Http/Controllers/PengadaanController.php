@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PemeliharaanRequest;
 use App\Http\Requests\PengadaanRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -19,7 +20,9 @@ class PengadaanController extends BaseController
         $pengadaan = Pengadaan::all();
 
         return response()->json([
+
             'result' => $pengadaan,
+
             'total' => count($pengadaan)
         ],200);
     }
@@ -120,6 +123,8 @@ class PengadaanController extends BaseController
             }
 
             $pengadaan->namaBarang = $request->namaBarang;
+            $pengadaan->kodeBarang = $request->kodeBarang;
+            $pengadaan->kodeRuang = $request->kodeRuang;
             $pengadaan->merek = $request->merek;
             $pengadaan->quantity = $request->quantity;
             $pengadaan->hargaBarang = $request->hargaBarang;

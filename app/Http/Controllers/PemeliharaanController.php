@@ -73,22 +73,6 @@ class PemeliharaanController extends Controller
                     'message' => 'Pemeliharaan tidak ditemukan'
                 ],404);
             }
-            
-            // if($request->jumlah !== null){
-            //     $findPemeliharaan->jumlah = $request->jumlah;
-            // } 
-            // if($request->keterangan !== null){
-            //     $findPemeliharaan->keterangan = $request->keterangan;
-            // }
-            // if($request->status !== null){
-            //     $findPemeliharaan->status = $request->status;
-            // }
-            // if($request->harga !== null){
-            //     $findPemeliharaan->harga = $request->harga;
-            // }
-            // if($request->buktiPembayaran !== null){
-            //     $findPemeliharaan->buktiPembayaran = $request->buktiPembayaran;
-            // }
 
             $validator = Validator::make($request->only(['status']),[
                 'status' => 'required',
@@ -101,6 +85,43 @@ class PemeliharaanController extends Controller
                 ],422);
             }else{
                 $findPemeliharaan->status = $request->status;
+                $findPemeliharaan->save();
+
+                return response()->json([
+                    'message' => 'Data Pemeliharaan Berhasil Di Update'
+                ],200);
+            }
+       }catch(Exception $e){
+            return response()->json([
+                'message' => $e
+            ],500);
+       }
+    }
+
+    public function EditPemeliharaan(PemeliharaanRequest $request, $kodePemeliharaan){
+        try{
+            $findPemeliharaan = Pemeliharaan::where('kodePemeliharaan',$kodePemeliharaan)->first();
+            if(!$findPemeliharaan){
+                return response()->json([
+                    'message' => 'Pemeliharaan tidak ditemukan'
+                ],404);
+            }
+
+            $validator = Validator::make($request->only(['jumlah', 'harga', 'keterangan']),[
+                'jumlah' => 'required',
+                'harga' => 'required',
+                'keterangan' => 'required',
+            ]);
+           
+            if($validator->fails()){
+                  return response()->json([
+                    'message'=>$request->status,
+                    'error' => $validator->errors()
+                ],422);
+            }else{
+                $findPemeliharaan->jumlah = $request->jumlah;
+                $findPemeliharaan->harga = $request->harga;
+                $findPemeliharaan->keterangan = $request->keterangan; 
                 $findPemeliharaan->save();
 
                 return response()->json([

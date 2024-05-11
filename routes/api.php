@@ -4,6 +4,8 @@ use App\Http\Controllers\KategoriesController;
 use App\Http\Controllers\PengadaanController;
 use App\Http\Controllers\PemeliharaanController;
 use App\Http\Controllers\RuangController;
+use App\Http\Controllers\AktivitasController;
+use App\Http\Controllers\CekNotifikasiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +47,8 @@ Route::get('findPengadaan/{id}',[PengadaanController::class, 'FindPengadaan']);
 Route::get('findByKategori/{kodeBarang}',[PengadaanController::class, 'FindByKategori']);
 Route::post('tambahPengadaan',[PengadaanController::class, 'TambahPengadaan']);
 Route::put('updatePengadaan/{id}', [PengadaanController::class, 'UpdatePengadaan']);
+Route::put('updateStatusPengadaan/{id}',[PengadaanController::class, 'UpdateStatusPengadaan']);
+Route::put('UpdateResi/{id}',[PengadaanController::class, 'UpdateResi']);
 Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengadaan']);
 
 Route::put('aksiOwnerPengadaan/{kodeBarang}',[PengadaanController::class, 'AksiOwnerPengadaan']);
@@ -75,10 +79,21 @@ Route::delete('deleteRuang/{kodeRuang}',[RuangController::class, 'DeleteRuang'])
 
 //Database Pemeliharaan
 Route::get('getPemeliharaan',[PemeliharaanController::class, 'getPemeliharaan']);
+Route::get('getPemeliharaanById/{kodePemeliharaan}',[PemeliharaanController::class, 'getPemeliharaanById']);
 
 Route::post('tambahPemeliharaan',[PemeliharaanController::class, 'TambahPemeliharaan']);
 Route::put('updatePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'UpdatePemeliharaan']);
 
 Route::put('editPemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'EditPemeliharaan']);
 Route::delete('deletePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::class, 'hapusPemeliharaan']);
+
+//Table Aktivitas
+Route::get('getAllAktivitas', [AktivitasController::class, 'getAllAktivitas']);
+
+//Table Notifikasi
+Route::get('FindNotifikasiByIdUser/{idUser}/{idAktivitas}/{role}', [CekNotifikasiController::class, 'FindNotifikasiByIdUser']);
+Route::post('TambahLihatNotifikasiAdmin', [CekNotifikasiController::class, 'TambahLihatNotifikasiAdmin']);
+Route::post('TambahLihatNotifikasiOwner', [CekNotifikasiController::class, 'TambahLihatNotifikasiOwner']);
+
+
 

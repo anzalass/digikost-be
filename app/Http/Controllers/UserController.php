@@ -31,7 +31,6 @@ class UserController extends BaseController
                 'name' => 'required|string|max:255',
                 'role' => 'required|string|max:1',
                 "noHP" => 'required|string|max:13'
-          
             ]);
              if($validator->fails()){
                 return response()->json([
@@ -48,21 +47,10 @@ class UserController extends BaseController
                     ]);
 
             if($user){
-                try{
-                    Mail::mailer('smtp')->to($user->email)->send(new UserVerification($user));
-
-                    return response()->json([
-                        'status'=>200,
-                        'message' => "Registered, verify your email address to login"
-                    ],200);
-                }catch(\Exception $e){
-                    $user->delete();
-                    
-                    return response()->json([
-                        'status'=>500,
-                        'message' => "could not send email verification, please try again"
-                    ],500);
-                }
+                return response()->json([
+                    'status'=>200,
+                    'message' => "Registered, verify your email address to login"
+                ],200);
             }
         
         }catch(\Exception $e){

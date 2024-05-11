@@ -10,6 +10,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 use App\Models\Pengadaan;
+use App\Models\Aktivitas;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
@@ -38,7 +39,6 @@ class PengadaanController extends BaseController
             'spesifikasi' => 'string|max:255',
             'ruang' => 'required|string|max:255',
             'supplier' => 'required|string|max:255',
-            'buktiNota' => 'required', 
         ]);
 
         if($validator->fails()){
@@ -49,7 +49,8 @@ class PengadaanController extends BaseController
             ],422);
         }else{
             try{
-                Pengadaan::create([
+                $pengadaan = Pengadaan::create([
+                    'idUser' => $request->idUser,
                     'namaBarang' => $request->namaBarang,
                     'kodeBarang' => $request->kodeBarang,
                     'kodeRuang' => $request->kodeRuang,
@@ -60,9 +61,16 @@ class PengadaanController extends BaseController
                     'keterangan' => $request->keterangan,
                     'ruang' => $request->ruang,
                     'supplier' => $request->supplier,
-                    'buktiNota' => $request->buktiNota,
                     'linkBarcode' => env('FRONTEND_URL') . '/api/' . $request->ruang,
                 ]);
+
+                Aktivitas::create([
+                    'IdPengadaan' => $pengadaan->id, 
+                    'IdPembuat' => $request->idUser,
+                    'tipe' => "pengadaan",
+                    'keterangan' => "Request Tambah Barang"
+                ]);
+
                 return response()->json([
                     'message' => "Pengadaan Successfully Created"
                 ],200);
@@ -86,6 +94,13 @@ class PengadaanController extends BaseController
 
             $findPengadaan->status = $request->status;
             $findPengadaan->save();
+
+            Aktivitas::create([
+                'IdPengadaan' => $kodeBarang, 
+                'IdPembuat' => $findPengadaan->idUser,
+                'tipe' => "pengadaan",
+                'keterangan' => "Pengadaan Status "+$request->status
+            ]);
 
             return response()->json([
                 'message'=> 'bisa',
@@ -154,8 +169,45 @@ class PengadaanController extends BaseController
             $pengadaan->hargaBarang = $request->hargaBarang;
             $pengadaan->spesifikasi = $request->spesifikasi;
             $pengadaan->ruang = $request->ruang;
-            $pengadaan->keterangan = $request->keterangan;
+            // $pengadaan->keterangan = $request->keterangan;
             $pengadaan->supplier = $request->supplier;
+            $pengadaan->buktiNota = $request->buktiNota;
+
+            $pengadaan->save();
+
+            return response()->json([
+                'message' => "Pengadaan Successfully Updated"
+            ],200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => $e
+            ],500);
+        }
+    }
+
+    
+    public function UpdateResi(PengadaanRequest $request, $id){
+        try{
+            $validator = Validator::make($request->all(),[
+                'NoResi' => 'required|string|max:50',
+                'buktiNota' => 'required|string|max:255',
+            ]);
+            if($validator->fails()){
+
+                return response()->json([
+                    'error' => $validator->errors(),
+                    'message' => $validator
+                ],422);
+            }
+            
+            $pengadaan = Pengadaan::find($id);
+            if(!$pengadaan){
+                return response()->json([
+                    'message' =>"Pengadaan not found."
+                ],404);
+            }
+
+            $pengadaan->NoResi = $request->NoResi;
             $pengadaan->buktiNota = $request->buktiNota;
 
             $pengadaan->save();
@@ -183,6 +235,44 @@ class PengadaanController extends BaseController
             ],404);
         }
     }
+
+    public function UpdateStatusPengadaan (PengadaanRequest $request, $id){
+        try{
+             $findPengadaan = Pengadaan::find($id);
+             if(!$findPengadaan){
+                 return response()->json([
+                     'message' => 'Pengadaan tidak ditemukan'
+                 ],404);
+             }
+ 
+             $validator = Validator::make($request->only(['status']),[
+                 'status' => 'required',
+             ]);
+            
+             if($validator->fails()){
+                   return response()->json([
+                     'message'=>$request->status,
+                     'error' => $validator->errors()
+                 ],422);
+             }else{
+                 $findPengadaan->status = $request->status;
+                 if($request->status == "selesai"){
+                    $findPengadaan->is_active = 1;
+                 }else if($request->status == "ditolak"){
+                    $findPengadaan->is_active = 0;
+                 }
+                 $findPengadaan->save();
+ 
+                 return response()->json([
+                     'message' => 'Data Pemeliharaan Berhasil Di Update'
+                 ],200);
+             }
+        }catch(Exception $e){
+             return response()->json([
+                 'message' => $e
+             ],500);
+        }
+     }
 
     public function DeletePengadaan($id){
         $pengadaan = Pengadaan::find($id);

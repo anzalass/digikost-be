@@ -6,6 +6,7 @@ use App\Http\Requests\PemeliharaanRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Pemeliharaan;
+use App\Models\Aktivitas;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,6 +18,20 @@ class PemeliharaanController extends Controller
         return response()->json([
             'results' => $Pemeliharaan,
             'total' => count($Pemeliharaan)
+        ],200);
+    }
+
+    public function getPemeliharaanById($KodePemeliharaan){
+        $findPemeliharaan = Pemeliharaan::where('kodePemeliharaan',$KodePemeliharaan)->first();
+
+        if(!$findPemeliharaan){
+            return response()->json([
+                "message" => "Data Pemeliharaan Tidak Ditemukan"
+            ],404);
+        }
+
+        return response()->json([
+            "results" => $findPemeliharaan
         ],200);
     }
 
@@ -46,6 +61,13 @@ class PemeliharaanController extends Controller
                     'buktiPembayaran'=> $request->buktiPembayaran,
                     'status'=> $request->status,
                     'harga'=> $request->harga
+                ]);
+
+                Aktivitas::create([
+                    'IdPemeliharaan' => $pemeliharaan->kodePemeliharaan, 
+                    'IdPembuat' => $request->idUser,
+                    'tipe' => "pemeliharaan",
+                    'keterangan' => "Request Pemeliharaan Barang"
                 ]);
                 
                 if($pemeliharaan){
@@ -86,6 +108,13 @@ class PemeliharaanController extends Controller
             }else{
                 $findPemeliharaan->status = $request->status;
                 $findPemeliharaan->save();
+
+                Aktivitas::create([
+                    'IdPemeliharaan' => $kodePemeliharaan, 
+                    'IdPembuat' => $findPemeliharaan->idUser,
+                    'tipe' => "pemeliharaan",
+                    'keterangan' => "Pemeliharaan Status "+$request->status 
+                ]);
 
                 return response()->json([
                     'message' => 'Data Pemeliharaan Berhasil Di Update'

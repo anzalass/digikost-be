@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\KategoriRequest;
 use App\Models\Kategori;
+use App\Models\Aktivitas;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -35,21 +36,41 @@ class KategoriesController extends Controller
 
     public function UpdateKategori(KategoriRequest $request, $kodeBarang)
     {
+        $validator = Validator::make($request->all(), [
+            'kodeBarang' => 'required|string|max:20',
+            'namaBarang' => 'required|string|max:255',
+            'merekBarang'=>'required|string|max:255'
+        ]);
         try{
-            $kategori = Kategori::where('kodeBarang', $kodeBarang)->first();
-            if(!$kategori){
+            if ($validator->fails()) {
                 return response()->json([
-                    'message' => "Kategori Not Found"
-                ],404);
+                    'error' => $validator->errors()
+                ],422);
+                // return response()->json(['errors' => $validator->errors()], 422);
+            }else{
+                $kategori = Kategori::where('kodeBarang', $kodeBarang)->first();
+                if(!$kategori){
+                    return response()->json([
+                        'message' => "Kategori Not Found"
+                    ],404);
+                }
+    
+                $kategori->kodeBarang = $request->kodeBarang;
+                $kategori->namaBarang = $request->namaBarang;
+                $kategori->kategori = $request->merekBarang;
+    
+                $kategori->save();
+    
+                Aktivitas::create([
+                    'IdKategori' => $kodeBarang, 
+                    'tipe' => "kategori",
+                    'keterangan' => "Edit Kategori Barang ", $kodeBarang
+                ]);
+    
+                return response()->json([
+                    'message' => "Kategori Successfully Updated"
+                ],200);
             }
-
-            $kategori->kodeBarang = $request->kodeBarang;
-            $kategori->namaBarang = $request->namaBarang;
-
-            $kategori->save();
-            return response()->json([
-                'message' => "Kategori Successfully Updated"
-            ],200);
         }catch(\Exception $e){
             return response()->json([
                 'message' => $e
@@ -62,6 +83,7 @@ class KategoriesController extends Controller
         $validator = Validator::make($request->all(), [
             'kodeBarang' => 'required|string|max:20',
             'namaBarang' => 'required|string|max:255',
+            'merekBarang'=>'required|string|max:255'
         ]);
         try{
             if ($validator->fails()) {
@@ -70,9 +92,18 @@ class KategoriesController extends Controller
                 ],422);
                 // return response()->json(['errors' => $validator->errors()], 422);
             }else{
-                Kategori::create([
+                $kategori = Kategori::create([
                     'kodeBarang'=> $request->kodeBarang,
-                    'namaBarang'=> $request->namaBarang
+                    'namaBarang'=> $request->namaBarang,
+                    'kategori' =>$request->merekBarang
+                ]);
+
+                Aktivitas::create([
+                    'IdKategori' => $request->kodeBarang, 
+                    'IdPembuat' => $request->idUser,
+                    'tipe' => "pengadaan",
+                    'tipe' => "kategori",
+                    'keterangan' => "Tambah Kategori Barang"
                 ]);
 
                 return response()->json([

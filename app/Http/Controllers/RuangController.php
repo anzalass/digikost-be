@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RuangRequest;
 use App\Models\Pengadaan;
 use App\Models\Ruang;
+use App\Models\Aktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -37,9 +38,16 @@ class RuangController extends Controller
                     'error'=>$validator->errors()
                 ],422);
             }else{
-                Ruang::create([
+                $ruang = Ruang::create([
                     'kodeRuang' => $request->kodeRuang,
                     'ruang' => $request->ruang
+                ]);
+
+                Aktivitas::create([
+                    'IdRuang' => $request->kodeRuang, 
+                    'IdPembuat' => $request->idUser,
+                    'tipe' => "ruang",
+                    'keterangan' => "Penambahan Ruangan"
                 ]);
                 return response()->json([
                     'message' => $request->ruang
@@ -89,6 +97,13 @@ class RuangController extends Controller
                 $findRuang->ruang = $request->ruang;
 
                 $findRuang->save();
+
+                Aktivitas::create([
+                    'IdRuang' => $request->kodeRuang, 
+                    'IdPembuat' => $request->idUser,
+                    'tipe' => "ruang",
+                    'keterangan' => "Update Ruangan "+$request->kodeRuang
+                ]);
 
                 return response()->json([
                     'message' => 'Data Ruangan Berhasil Di Update'

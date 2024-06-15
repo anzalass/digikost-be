@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PemeliharaanRequest;
 use Illuminate\Http\Request;
-
+use App\Models\User;
 use App\Models\Pemeliharaan;
 use App\Models\Aktivitas;
+use App\Models\Notifikasi;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -63,11 +64,29 @@ class PemeliharaanController extends Controller
                     'harga'=> $request->harga
                 ]);
 
+                $getalluser = User::all();
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => 2,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'menambah pengadaan',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                        'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+    
+                    ]);
+                }
+    
                 Aktivitas::create([
-                    'IdPemeliharaan' => $pemeliharaan->kodePemeliharaan, 
-                    'IdPembuat' => $request->idUser,
-                    'tipe' => "pemeliharaan",
-                    'keterangan' => "Request Pemeliharaan Barang"
+                    'id_kegiatan'=> 2,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah pengadaan',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
                 ]);
                 
                 if($pemeliharaan){
@@ -109,13 +128,31 @@ class PemeliharaanController extends Controller
                 $findPemeliharaan->status = $request->status;
                 $findPemeliharaan->save();
 
+                $getalluser = User::all();
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => 2,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'menambah pengadaan',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                        'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+    
+                    ]);
+                }
+    
                 Aktivitas::create([
-                    'IdPemeliharaan' => $kodePemeliharaan, 
-                    'IdPembuat' => $findPemeliharaan->idUser,
-                    'tipe' => "pemeliharaan",
-                    'keterangan' => "Pemeliharaan Status "+$request->status 
+                    'id_kegiatan'=> 2,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah pengadaan',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
                 ]);
-
+                
                 return response()->json([
                     'message' => 'Data Pemeliharaan Berhasil Di Update'
                 ],200);
@@ -153,6 +190,33 @@ class PemeliharaanController extends Controller
                 $findPemeliharaan->keterangan = $request->keterangan; 
                 $findPemeliharaan->save();
 
+
+                $getalluser = User::all();
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => 2,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'menambah pengadaan',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                        'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+    
+                    ]);
+                }
+    
+                Aktivitas::create([
+                    'id_kegiatan'=> 2,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah pengadaan',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+                ]);
+                
+
                 return response()->json([
                     'message' => 'Data Pemeliharaan Berhasil Di Update'
                 ],200);
@@ -164,11 +228,41 @@ class PemeliharaanController extends Controller
        }
     }
 
-    public function hapusPemeliharaan($kodePemeliharaan){
+    public function hapusPemeliharaan(PemeliharaanRequest $request, $kodePemeliharaan){
         $findPemeliharaan = Pemeliharaan::where('kodePemeliharaan',$kodePemeliharaan)->first();
 
         if($findPemeliharaan){
+
+            $getalluser = User::all();
+
+            foreach($getalluser as $user) {
+                Notifikasi::create([
+                    'untuk' => $user->id,
+                    'id_kegiatan' => 2,
+                    'id_pembuat' => $request->id_pembuat,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah pengadaan',
+                    'status' => 'belumdibaca',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+
+                ]);
+            }
+            Aktivitas::create([
+                'id_kegiatan'=> 2,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'menambah pengadaan',
+                'url' => 'http://localhost:5173/detail-pengadaan/'. 2,
+                'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+            ]);
             $findPemeliharaan->delete();
+
+ 
+
+            
+
             return response()->json([
                 'message' => 'Pemeliharaan Berhasil Dihapus'
             ],200);

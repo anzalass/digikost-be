@@ -5,7 +5,7 @@ use App\Http\Controllers\PengadaanController;
 use App\Http\Controllers\PemeliharaanController;
 use App\Http\Controllers\RuangController;
 use App\Http\Controllers\AktivitasController;
-use App\Http\Controllers\CekNotifikasiController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,8 +50,8 @@ Route::put('updatePengadaan/{id}', [PengadaanController::class, 'UpdatePengadaan
 Route::put('updateStatusPengadaan/{id}',[PengadaanController::class, 'UpdateStatusPengadaan']);
 Route::put('UpdateResi/{id}',[PengadaanController::class, 'UpdateResi']);
 Route::delete('pengadaanDelete/{id}',[PengadaanController::class, 'DeletePengadaan']);
-
 Route::put('aksiOwnerPengadaan/{kodeBarang}',[PengadaanController::class, 'AksiOwnerPengadaan']);
+Route::get('pengadaanpage',[PengadaanController::class, 'PengadaanBarangPage']);
 
 //Database User
 Route::get('getUser',[UserController::class, 'getUser']);
@@ -62,11 +62,14 @@ Route::post('login',[UserController::class, 'login']);
 Route::post('forgotPassword',[UserController::class, 'register']);
 Route::delete('deleteUser/{id}', [UserController::class, 'deleteUser']);
 
+//homepage
+
+Route::get('homepage/{iduser}', [UserController::class, 'HomePage']);
+
 //Database Kategori
 Route::get('getKategori',[KategoriesController::class, 'index']);
 Route::get('findKategori/{kodeBarang}/{namaBarang}',[KategoriesController::class, 'FindKategori']);
 Route::put('updateKategori/{kodeBarang}', [KategoriesController::class, 'UpdateKategori']);
-
 Route::post('tambahKategori',[KategoriesController::class, 'TambahKategori']);
 Route::delete('kategoriDelete/{kodeBarang}',[KategoriesController::class, 'DeleteKategori']);
 
@@ -91,9 +94,10 @@ Route::delete('deletePemeliharaan/{kodePemeliharaan}',[PemeliharaanController::c
 Route::get('getAllAktivitas', [AktivitasController::class, 'getAllAktivitas']);
 
 //Table Notifikasi
-Route::get('FindNotifikasiByIdUser/{idUser}/{idAktivitas}/{role}', [CekNotifikasiController::class, 'FindNotifikasiByIdUser']);
-Route::post('TambahLihatNotifikasiAdmin', [CekNotifikasiController::class, 'TambahLihatNotifikasiAdmin']);
-Route::post('TambahLihatNotifikasiOwner', [CekNotifikasiController::class, 'TambahLihatNotifikasiOwner']);
+Route::get('FindNotifikasiByIdUser/{idUser}/{idAktivitas}/{role}', [NotifikasiController::class, 'FindNotifikasiByIdUser']);
+Route::post('TambahLihatNotifikasiAdmin', [NotifikasiController::class, 'TambahLihatNotifikasiAdmin']);
+Route::post('TambahLihatNotifikasiOwner', [NotifikasiController::class, 'TambahLihatNotifikasiOwner']);
+Route::delete('deletenotifikasibyid/{id}', [NotifikasiController::class, 'DeleteNotifikasiById']);
 
 
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\KategoriRequest;
 use App\Models\Kategori;
 use App\Models\Aktivitas;
+use App\Models\Notifikasi;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
@@ -34,10 +36,9 @@ class KategoriesController extends Controller
         }
     }
 
-    public function UpdateKategori(KategoriRequest $request, $kodeBarang)
+    public function UpdateKategori(Request $request, $kodeBarang)
     {
         $validator = Validator::make($request->all(), [
-            'kodeBarang' => 'required|string|max:20',
             'namaBarang' => 'required|string|max:255',
             'merekBarang'=>'required|string|max:255'
         ]);
@@ -55,16 +56,37 @@ class KategoriesController extends Controller
                     ],404);
                 }
     
-                $kategori->kodeBarang = $request->kodeBarang;
+                $kategori->kodeBarang = $kodeBarang;
                 $kategori->namaBarang = $request->namaBarang;
                 $kategori->kategori = $request->merekBarang;
     
                 $kategori->save();
     
+                $getalluser = User::all();
+
+
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => 0,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'mengupdate kategori',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/tambah-barang',
+                        'keterangan' => $request->nama_pembuat . " Mengupdate Kategori Dengan Kode " . $kodeBarang . " Menjadi " . $kategori->namaBarang,
+    
+                    ]);
+                }
+    
                 Aktivitas::create([
-                    'IdKategori' => $kodeBarang, 
-                    'tipe' => "kategori",
-                    'keterangan' => "Edit Kategori Barang ", $kodeBarang
+                    'id_kegiatan'=> 0,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'hapus kategori',
+                    'url' => 'http://localhost:5173/tambah-barang',
+                    'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate  Kategori Dengan Kode". " ". $kodeBarang . " Menjadi " . $kategori->namaBarang, 
                 ]);
     
                 return response()->json([
@@ -84,6 +106,7 @@ class KategoriesController extends Controller
             'kodeBarang' => 'required|string|max:20',
             'namaBarang' => 'required|string|max:255',
             'merekBarang'=>'required|string|max:255'
+      
         ]);
         try{
             if ($validator->fails()) {
@@ -98,33 +121,89 @@ class KategoriesController extends Controller
                     'kategori' =>$request->merekBarang
                 ]);
 
+                $getalluser = User::all();
+
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => 0,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'tambah kategori',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/tambah-barang',
+                        'keterangan'=> $request->nama_pembuat ." ". "Membuat  Kategori Baru" . " " . $request->namaBarang, 
+
+                    ]);
+                }
+
                 Aktivitas::create([
-                    'IdKategori' => $request->kodeBarang, 
-                    'IdPembuat' => $request->idUser,
-                    'tipe' => "pengadaan",
-                    'tipe' => "kategori",
-                    'keterangan' => "Tambah Kategori Barang"
+                    'id_kegiatan'=> 0,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'tambah kategori',
+                    'url' => 'http://localhost:5173/tambah-barang',
+                    'keterangan'=> $request->nama_pembuat  . " ". "Membuat  Kategori Baru". " " .$request->namaBarang, 
                 ]);
 
+
+          
                 return response()->json([
-                    'message'=> "Kategori Successfully Created"
+                    'message'=> "Kategori Successfully Created",
                 ],200);
             }    
         }catch(\Exception $e){
             return response()->json([
-                'message'=> "gg"
+                'message'=> "error",
+                'error' => $e,
             ],500);
         }
     }
 
-    public function DeleteKategori($kodeBarang)
+    public function DeleteKategori(Request $request,$kodeBarang)
     {
-        $kategori = Kategori::where('kodeBarang',$kodeBarang)->delete();
-        if($kategori){
+        try {
+            //code...
+            $kategori = Kategori::where('kodeBarang',$kodeBarang)->delete();
+
+            $getalluser = User::all();
+            foreach($getalluser as $user) {
+                Notifikasi::create([
+                    'untuk' => $user->id,
+                    'id_kegiatan' => 0,
+                    'id_pembuat' => $request->id_pembuat,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'hapus kategori',
+                    'status' => 'belumdibaca',
+                    'url' => 'http://localhost:5173/tambah-barang',
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menghapus  Kategori". " " . $request->namaBarang . " ". "Dengan Kode"  . " " .$kodeBarang, 
+
+                ]);
+            }
+
+            Aktivitas::create([
+                'id_kegiatan'=> 0,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'hapus kategori',
+                'url' => 'http://localhost:5173/tambah-barang',
+                'keterangan'=> $request->nama_pembuat  . " ". "Menghapus  Kategori". " " . $request->namaBarang . " ". "Dengan Kode"  ." " . $kodeBarang, 
+            ]);
+
+            if($kategori){
+                return response()->json([
+                    'message' =>"Kategori successfully deleted."
+                ],200);
+            }
+        } catch(\Exception $e){
             return response()->json([
-                'message' =>"Kategori successfully deleted."
-            ],200);
+                'message'=> $e,
+                'error' => $e->getMessage(),
+            ],500);
         }
+      
 
     }
 }

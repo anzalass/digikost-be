@@ -8,11 +8,15 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-
+use App\Models\Kategori;
 use App\Models\Pengadaan;
 use App\Models\Aktivitas;
+use App\Models\Notifikasi;
 use App\Models\User;
+use App\Models\Ruang;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+
 
 class PengadaanController extends BaseController
 {
@@ -26,6 +30,19 @@ class PengadaanController extends BaseController
 
             'total' => count($pengadaan)
         ],200);
+    }
+
+    public function PengadaanBarangPage() {
+        $pengadaan = Pengadaan::all();
+        $kategori = Kategori::all();
+        $ruang = Ruang::all();
+        return response()->json([
+            'pengadaan' => $pengadaan,
+            'kategori' => $kategori,
+            'ruang' => $ruang,
+           
+        ],200);
+
     }
 
     public function TambahPengadaan(PengadaanRequest $request){
@@ -64,12 +81,31 @@ class PengadaanController extends BaseController
                     'linkBarcode' => env('FRONTEND_URL') . '/api/' . $request->ruang,
                 ]);
 
+                $getalluser = User::all();
+                foreach($getalluser as $user) {
+                    Notifikasi::create([
+                        'untuk' => $user->id,
+                        'id_kegiatan' => $pengadaan->id,
+                        'id_pembuat' => $request->id_pembuat,
+                        'nama_pembuat' => $request->nama_pembuat,
+                        'role_pembuat' => $request->role_pembuat,
+                        'tipe' => 'menambah pengadaan',
+                        'status' => 'belumdibaca',
+                        'url' => 'http://localhost:5173/detail-pengadaan/'. $pengadaan->id,
+                        'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
+    
+                    ]);
+                }
+    
                 Aktivitas::create([
-                    'IdPengadaan' => $pengadaan->id, 
-                    'IdPembuat' => $request->idUser,
-                    'tipe' => "pengadaan",
-                    'keterangan' => "Request Tambah Barang"
+                    'id_kegiatan'=> $pengadaan->id,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah pengadaan',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. $pengadaan->id,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambah Pengadaan Baru". " ". $request->namBarang, 
                 ]);
+    
 
                 return response()->json([
                     'message' => "Pengadaan Successfully Created"
@@ -95,11 +131,31 @@ class PengadaanController extends BaseController
             $findPengadaan->status = $request->status;
             $findPengadaan->save();
 
+
+            $getalluser = User::all();
+            foreach($getalluser as $user) {
+                Notifikasi::create([
+                    'untuk' => $user->id,
+                    'id_kegiatan' => $findPengadaan->id,
+                    'id_pembuat' => $request->id_pembuat,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'mengupdate status pengadaan',
+                    'status' => 'belumdibaca',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. $kodeBarang,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate  Status Pengadaan". " ". $findPengadaan->namaBarang . "Menjadi". " ". $request->status, 
+
+                ]);
+            }
+
             Aktivitas::create([
-                'IdPengadaan' => $kodeBarang, 
-                'IdPembuat' => $findPengadaan->idUser,
-                'tipe' => "pengadaan",
-                'keterangan' => "Pengadaan Status "+$request->status
+                'id_kegiatan'=> $findPengadaan->id,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'mengupdate status pengadaan',
+                'url' => 'http://localhost:5173/detail-pengadaan/'. $kodeBarang,
+                'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate  Status Pengadaan". " ". $findPengadaan->namaBarang . "Menjadi". " ". $request->status, 
+
             ]);
 
             return response()->json([
@@ -155,6 +211,35 @@ class PengadaanController extends BaseController
     public function UpdatePengadaan(PengadaanRequest $request, $id){
         try{
             $pengadaan = Pengadaan::find($id);
+
+
+            $getalluser = User::all();
+            foreach($getalluser as $user) {
+                Notifikasi::create([
+                    'untuk' => $user->id,
+                    'id_kegiatan' => $pengadaan->id,
+                    'id_pembuat' => $request->id_pembuat,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'mengupdate pengadaan',
+                    'status' => 'belumdibaca',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate  Pengadaan Barang". " ". $pengadaan->namaBarang, 
+
+                ]);
+            }
+
+            Aktivitas::create([
+                'id_kegiatan'=> $pengadaan->id,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'mengupdate pengadaaan',
+                'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate  Pengadaan Barang". " ". $pengadaan->namaBarang, 
+
+            ]);
+
+
             if(!$pengadaan){
                 return response()->json([
                     'message' =>"Pengadaan not found."
@@ -212,6 +297,34 @@ class PengadaanController extends BaseController
 
             $pengadaan->save();
 
+            $getalluser = User::all();
+            foreach($getalluser as $user) {
+                Notifikasi::create([
+                    'untuk' => $user->id,
+                    'id_kegiatan' => $pengadaan->id,
+                    'id_pembuat' => $request->id_pembuat,
+                    'nama_pembuat' => $request->nama_pembuat,
+                    'role_pembuat' => $request->role_pembuat,
+                    'tipe' => 'menambah resi',
+                    'status' => 'belumdibaca',
+                    'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                    'keterangan'=> $request->nama_pembuat  . " ". "Menambahkan Resi". " ". $pengadaan->namaBarang, 
+
+                ]);
+            }
+
+            Aktivitas::create([
+                'id_kegiatan'=>  $pengadaan->id,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'menambah resi',
+                'url' => 'http://localhost:3000/tambah-barang',
+                'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                'keterangan'=> $request->nama_pembuat  . " ". "Menambahkan Resi". " ". $pengadaan->namaBarang, 
+
+            ]);
+
+
             return response()->json([
                 'message' => "Pengadaan Successfully Updated"
             ],200);
@@ -262,6 +375,34 @@ class PengadaanController extends BaseController
                     $findPengadaan->is_active = 0;
                  }
                  $findPengadaan->save();
+
+
+                 $getalluser = User::all();
+                 foreach($getalluser as $user) {
+                     Notifikasi::create([
+                         'untuk' => $user->id,
+                         'id_kegiatan' => $findPengadaan->id,
+                         'id_pembuat' => $request->id_pembuat,
+                         'nama_pembuat' => $request->nama_pembuat,
+                         'role_pembuat' => $request->role_pembuat,
+                         'tipe' => 'mengupdate status',
+                         'status' => 'belumdibaca',
+                         'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                         'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate Status Pengadaan". " ". $findPengadaan->namaBarang  , 
+     
+                     ]);
+                 }
+     
+                 Aktivitas::create([
+                     'id_kegiatan'=> $findPengadaan->id,
+                     'nama_pembuat' => $request->nama_pembuat,
+                     'role_pembuat' => $request->role_pembuat,
+                     'tipe' => 'mengupdate status',
+                     'url' => 'http://localhost:5173/detail-pengadaan/'. $id,
+                      'keterangan'=> $request->nama_pembuat  . " ". "Mengupdate Status Pengadaan". " ". $findPengadaan->namaBarang  , 
+     
+                 ]);
+                 
  
                  return response()->json([
                      'message' => 'Data Pemeliharaan Berhasil Di Update'
@@ -274,8 +415,40 @@ class PengadaanController extends BaseController
         }
      }
 
-    public function DeletePengadaan($id){
+
+
+
+
+    public function DeletePengadaan(Request $request, $id){
         $pengadaan = Pengadaan::find($id);
+
+
+        $getalluser = User::all();
+        foreach($getalluser as $user) {
+            Notifikasi::create([
+                'untuk' => $user->id,
+                'id_kegiatan' => 0,
+                'id_pembuat' => $request->id_pembuat,
+                'nama_pembuat' => $request->nama_pembuat,
+                'role_pembuat' => $request->role_pembuat,
+                'tipe' => 'Menghapus Pengadaan',
+                'status' => 'belumdibaca',
+                'url' => 'http://localhost:5173/tambah-barang',
+                'keterangan'=> $request->nama_pembuat  . " ". "Menghapus Pengadaan". " ". $pengadaan->namaBarang  , 
+
+            ]);
+        }
+
+        Aktivitas::create([
+            'id_kegiatan'=> 0,
+            'nama_pembuat' => $request->nama_pembuat,
+            'role_pembuat' => $request->role_pembuat,
+            'tipe' => 'Menghapus Pengadaan',
+            'url' => 'http://localhost:5173/tambah-barang',
+             'keterangan'=> $request->nama_pembuat  . " ". "Menghapus Pengadaan ". " ". $pengadaan->namaBarang  , 
+
+        ]);
+        
 
         if(!$pengadaan){
             return response()->json([

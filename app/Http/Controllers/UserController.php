@@ -7,6 +7,11 @@ use App\Http\Requests\UserRequest;
 use App\Mail\UserVerification;
 use App\Models\Pengadaan;
 use App\Models\User;
+use App\Models\Ruang;
+use App\Models\Kategori;
+use App\Models\Pemeliharaan;
+use App\Models\Aktivitas;
+use App\Models\Notifikasi;
 // use Facade\FlareClient\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +65,31 @@ class UserController extends BaseController
         }
     }
 
+
+    public function HomePage($iduser){
+        $user = User::count();
+        $ruangan = Ruang::count();
+        $kategori = Kategori::count();
+        $pengadaan = Pengadaan::count();
+        $pemeliharaan = Pemeliharaan::count();
+        $aktivitas = Aktivitas::all();
+        $notifikasi = Notifikasi::where('untuk', $iduser)->get(); // Menggunakan $iduser di sini
+        $notifikasilength = Notifikasi::where('untuk',$iduser)->count(); // Menggunakan $iduser di sini
+        $totalbarang = Pengadaan::where('status', 'selesai')->count();
+    
+        return response()->json([
+           'totaluser' => $user,
+           'totalruangan' => $ruangan,
+           'totalkategori' => $kategori,
+           'totalpengadaan' => $pengadaan,
+           'totalpemeliharaan' => $pemeliharaan,
+           'aktivitas' => $aktivitas,
+           'notifikasi' => $notifikasi,
+           'lengthnotifikasi' => $notifikasilength,
+           'totalbarang' => $totalbarang
+        ], 200);
+    }
+
     public function getUser(){
         $user = User::all();
 
@@ -103,18 +133,26 @@ class UserController extends BaseController
                 return response([
                     'message'=> "Invalid Credentials"
                 ], Response::HTTP_UNAUTHORIZED);
+            } else {
+                $datauser = User::where('email', $request->email)->first();
+                return response()->json([
+                    'data' => $datauser
+                ]);
             }
 
             // return $this->respondWithToken($token);
 
-            $user = Auth::user();
-            $token = $user->createToken('token')->plainTextToken;
+            // $user = Auth::user();
+            // $token = $user->createToken('token')->plainTextToken;
 
-            $cookie = cookie('jwt',$token, 60*24,);
+            // $cookie = cookie('jwt',$token, 60*24,);
 
+            // return response()->json([
+            //     'message' => $token
+            // ])->withCookie($cookie);
             return response()->json([
                 'message' => $token
-            ])->withCookie($cookie);
+            ]);
         }
     }
 

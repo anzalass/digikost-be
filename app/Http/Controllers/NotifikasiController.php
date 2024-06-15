@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\CekNotifikasi;
-use App\Http\Requests\CekNotifikasiRequest;
+use App\Models\Notifikasi;
+use App\Http\Requests\NotifikasiRequest;
 
-class CekNotifikasiController extends Controller
+class NotifikasiController extends Controller
 {
-    public function TambahLihatNotifikasiAdmin(CekNotifikasiRequest $Request){
+    public function TambahLihatNotifikasiAdmin(NotifikasiRequest $Request){
         try{
-            $TambahNotifikasi = CekNotifikasi::create([
+            $TambahNotifikasi = Notifikasi::create([
                 'idAdmin' => $Request->idAdmin,
                 'status' => 1
             ]);
@@ -21,9 +21,9 @@ class CekNotifikasiController extends Controller
         }
     }
 
-    public function TambahLihatNotifikasiOwner(CekNotifikasiRequest $Request){
+    public function TambahLihatNotifikasiOwner(NotifikasiRequest $Request){
         try{
-            $TambahNotifikasi = CekNotifikasi::create([
+            $TambahNotifikasi = Notifikasi::create([
                 'idOwner' => $Request->idOwner,
                 'status' => 1
             ]);
@@ -36,7 +36,7 @@ class CekNotifikasiController extends Controller
 
     public function FindNotifikasiByIdUser($idUser, $idAktivitas, $role){
         try{
-            $findNotifikasiUser = CekNotifikasi::where('idAktivitas', $idAktivitas)->where('idOwner', '==', $idUser)->orWhere('idAdmin', $idUser)->get();
+            $findNotifikasiUser = Notifikasi::where('idAktivitas', $idAktivitas)->where('idOwner', '==', $idUser)->orWhere('idAdmin', $idUser)->get();
 
             if(count($findNotifikasiUser) != 0){
                 return response()->json([
@@ -54,4 +54,25 @@ class CekNotifikasiController extends Controller
             ],500);
         }
     }
+    public function DeleteNotifikasiById($id){
+        try {
+            //code...
+            $nofifikasi = Notifikasi::where('id',$id)->first();
+            if ($nofifikasi) {
+                $nofifikasi->delete();
+            }
+            return response()->json([
+                'message' =>"Notifikasi berhasil dihapus."
+            ],200);
+        } catch (\Exception $e) {
+            //throw $th;
+    
+            return response()->json([
+                'message'=> $e
+            ],500);
+        }
+    }
 }
+
+
+
